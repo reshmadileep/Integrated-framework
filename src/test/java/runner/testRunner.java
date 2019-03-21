@@ -12,7 +12,7 @@ import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
 import net.masterthought.cucumber.Reportable;
 	
-	@CucumberOptions(features = "src/test/resources/features/",
+	@CucumberOptions(features = "src/test/resources/features/Login.feature",
 	        glue = { "stepDefinitions" },
 	        tags = {"" },
 	        plugin = { "pretty", "json:target/cucumber-reports/Cucumber.json",
