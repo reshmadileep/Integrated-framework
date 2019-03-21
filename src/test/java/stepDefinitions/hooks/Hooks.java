@@ -50,7 +50,7 @@ public class Hooks {
         testEnv = (System.getenv("TEST_ENV") == null) ? testEnv : System.getenv("TEST_ENV");
     }
 
- /*  @Before(order=0)
+   @Before(order=0)
     public void doSetupBeforeExecution() {
         Properties properties;
         String browser;
@@ -128,7 +128,7 @@ public class Hooks {
         this.world.context.put("testEnv", testEnv.toLowerCase());
         world.context.put("driver", driver);
     }
-        */
+        
     
   //Experimenting tagged hooks for single framework  
     
