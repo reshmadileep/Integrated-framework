@@ -50,85 +50,7 @@ public class Hooks {
         testEnv = (System.getenv("TEST_ENV") == null) ? testEnv : System.getenv("TEST_ENV");
     }
 
-   @Before(order=0)
-    public void doSetupBeforeExecution() {
-        Properties properties;
-        String browser;
-        String executionType;
-        String gridUrl;
-        String testAppUrl;
-        String projectPath = System.getProperty("user.dir");
-        properties = new Properties();
-        try {
-            properties.load(new FileInputStream(new File("./src/test/resources/config/dev.properties")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        browser = properties.getProperty("browser");
-        testAppUrl = properties.getProperty("testAppUrl");
-        executionType = (System.getenv("EXECUTION_TYPE") == null) ? properties.getProperty("executionType") : System.getenv("EXECUTION_TYPE");
-        if(executionType.equalsIgnoreCase("local")) {
-            if (browser.equalsIgnoreCase("headless")) {
-                System.setProperty("webdriver.chrome.driver",
-                        projectPath + "\\src\\test\\resources\\drivers\\chromedriver.exe");
-                ChromeOptions options = new ChromeOptions();
-                options.addArguments("window-size=1920,1080");
-                options.addArguments("headless");
-                driver = new ChromeDriver(options);
-                driver.get(testAppUrl);
-                driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-            } else {
-                if (browser.equalsIgnoreCase("firefox")) {
-                    System.setProperty("webdriver.chrome.driver",
-                            projectPath + "\\src\\test\\resources\\drivers\\geckodriver.exe");
-                    driver = new FirefoxDriver();
-                } else if (browser.equalsIgnoreCase("chrome")) {
-                    System.setProperty("webdriver.chrome.driver",
-                            projectPath + "\\src\\test\\resources\\drivers\\chromedriver.exe");
-                    driver = new ChromeDriver();
-                } else if (browser.equalsIgnoreCase("internetExplorer")) {
-                    System.setProperty("webdriver.ie.driver",
-                            projectPath + "\\src\\test\\resources\\drivers\\MicrosoftWebDriver.exe");
-                    driver = new InternetExplorerDriver();
-                }
-                driver.get(testAppUrl);
-                driver.manage().window().maximize();
-            }
-        }
-        else{
-            gridUrl = properties.getProperty("gridUrl");
-            DesiredCapabilities capabilities = null;
-            if(browser.equalsIgnoreCase("firefox"))
-                capabilities = DesiredCapabilities.firefox();
-            else if(browser.equalsIgnoreCase("chrome"))
-                capabilities = DesiredCapabilities.chrome();
-            else if(browser.equalsIgnoreCase("internetExplorer"))
-                capabilities = DesiredCapabilities.internetExplorer();
-            else if(browser.equalsIgnoreCase("edge"))
-                capabilities = DesiredCapabilities.edge();
 
-            capabilities.setBrowserName(browser);
-            try {
-                driver = new RemoteWebDriver(new URL(gridUrl), capabilities);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-            ((RemoteWebDriver)driver).setFileDetector(new LocalFileDetector());
-            driver.get(testAppUrl);
-            driver.manage().window().maximize();
-        }
-    
-        HashMap<String, String> map= new HashMap<String, String>();
-        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-            map.put((String) entry.getKey(), (String) entry.getValue());
-        }
-        this.world.context.put("config", map);
-        this.world.context.put("testEnv", testEnv.toLowerCase());
-        world.context.put("driver", driver);
-    }
-        
     
   //Experimenting tagged hooks for single framework  
     
@@ -234,6 +156,7 @@ public class Hooks {
                      capabilities.setCapability(MobileCapabilityType.APP, app.getAbsolutePath());
               }
               driver = new AndroidDriver<WebElement>(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+              driver.get(url); 
        } else {
               capabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "IOS");
               capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION,"12.1");
@@ -256,12 +179,13 @@ public class Hooks {
               }
           //    driver = new IOSDriver<IOSElement>(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
               driver = new RemoteWebDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+              driver.get(url); 
        }
        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
        world.context.put("testEnv", testEnv.toLowerCase());
        world.context.put("driver", driver);          
        
-    driver.get(url);      
+         
        
     } 
     
